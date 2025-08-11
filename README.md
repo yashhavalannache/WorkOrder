@@ -1,5 +1,5 @@
-WprlOrder System ⚙️
-The WprkOrder System is a streamlined task and work order management platform designed to simplify operations for admins, workers, and supervisors. It ensures smooth task assignment, tracking, and completion with real-time updates, providing a user-friendly interface and robust backend logic.
+WorkOrder System ⚙️
+The WorkOrder System is a streamlined task and work order management platform designed to simplify operations for admins, workers, and supervisors. It ensures smooth task assignment, tracking, and completion with real-time updates, providing a user-friendly interface and robust backend logic.
 
 ✨ Features
 User Authentication 🔐
