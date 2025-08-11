@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Worker Dashboard</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+  <style>
+    body {
+    position: relative;
+    min-height: 100vh;
+    margin: 0;
+  }
+
+  body::before {
+    content: "";
+    background-image: url("{{ url_for('static', filename='backgrounds/createtasks.jpg') }}");
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    opacity: 0.5; /* 👈 controls the fade */
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+  }
+
+  .card.shadow-sm {
+    background-color: rgba(255, 255, 255, 0.95);
+    border-radius: 15px;
+    padding: 20px;
+    box-shadow: 0 0 25px rgba(0, 0, 0, 0.25);
+  }
+  .logged-in-badge {
+  display: inline-block;
+  padding: 8px 14px;
+  font-weight: 600;
+  font-size: 0.95rem;
+  border-radius: 12px;
+  color: #fff;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  border: 1px solid rgba(76, 39, 224, 0.943);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  transition: all 0.3s ease;
+
+  /* Position tweak */
+  position: relative;
+  top: 8px;    /* moves it slightly down */
+  left: -0.3cm; /* moves it 0.3cm to the left */
+}
+
+.logged-in-badge .text {
+  opacity: 0.9;
+  margin-right: 4px;
+}
+
+.logged-in-badge .worker-name {
+  color: #ffdf5e; /* Gold highlight */
+  text-shadow: 0 0 5px rgba(255, 223, 94, 0.8);
+}
+
+.logged-in-badge:hover {
+  transform: scale(1.05);
+  background: rgba(0, 0, 0, 0.75);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.4);
+}
+
+
+    .profile-icon {
+      color: white;
+      font-size: 1.8rem;
+      margin-right: 15px;
+      cursor: pointer;
+      transition: color 0.3s ease;
+    }
+    .profile-icon:hover { color: #ffeb3b; }
+    .avatar { width: 36px; height: 36px; border-radius: 50%; object-fit: cover; border: 2px solid #fff; box-shadow: 0 0 2px rgba(0,0,0,.2); margin-right: 15px; cursor: pointer; transition: transform .15s ease; }
+    .avatar:hover { transform: scale(1.05); }
+    .clickable-row { cursor: pointer; }
+    .avatar-wrapper { width: 40px; height: 40px; border-radius: 50%; overflow: hidden; display: inline-block; flex-shrink: 0; }
+    .avatar-img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; display: block; }
+  </style>
+</head>
+
+<body>
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow mb-4">
+  <div class="container d-flex justify-content-between align-items-center">
+    <span class="navbar-brand fw-bold">WorkOrder Worker</span>
+
+    <div class="d-flex align-items-center ms-auto">
+      <p class="logged-in-badge shadow-glass">
+  <span class="text">Logged in as:</span> 
+  <span class="worker-name">{{ user['username'] }}</span>
+</p>
+
+      <a href="{{ url_for('profile', user_id=session['user_id']) }}" title="View Profile" class="me-2">
+        <div class="avatar-wrapper">
+          {% if user and user['profile_pic'] and user['profile_pic']|length > 0 %}
+            <img src="{{ url_for('static', filename='uploads/' ~ user['profile_pic']) }}" alt="Profile" class="avatar-img">
+          {% else %}
+            <img src="{{ url_for('static', filename='uploads/dummy profile.png') }}" alt="Default Profile" class="avatar-img">
+          {% endif %}
+        </div>
+      </a>
+
+      <a href="{{ url_for('logout') }}" class="btn btn-outline-light btn-sm">Logout</a>
+    </div>
+  </div>
+</nav>
+
+<div class="container">
+  {% with messages = get_flashed_messages() %}
+    {% if messages %}
+      <div class="alert alert-success mb-3 shadow" id="flash-msg">
+        {{ messages[0] }}
+      </div>
+    {% endif %}
+  {% endwith %}
+
+  <!-- Active Tasks Table -->
+  <div class="card p-3 shadow table-responsive mb-4">
+    <h4 class="mb-3 text-primary">Active Tasks</h4>
+    <table class="table table-striped table-hover align-middle mb-0">
+      <thead class="table-light">
+        <tr>
+          <th>Title</th>
+          <th>Description</th>
+          <th>Machine</th>
+          <th>Area</th>
+          <th>Deadline</th>
+          <th>Status</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for task in tasks %}
+        <tr class="clickable-row" data-task-id="{{ task['id'] }}">
+          <td>{{ task['title'] }}</td>
+          <td class="description-cell">{{ task['description'] }}</td>
+          <td>{{ task['machine_id'] }}</td>
+          <td>{{ task['area'] }}</td>
+          <td>{{ task['deadline'] }}</td>
+          <td>
+            <span class="badge bg-{% if task['status'] == 'Done' %}success{% elif task['status'] == 'In Progress' %}primary{% else %}secondary{% endif %}">{{ task['status'] }}</span>
+          </td>
+          <td>
+            <form method="POST" action="{{ url_for('update_task', task_id=task['id']) }}" enctype="multipart/form-data" class="d-flex align-items-center gap-2 flex-wrap status-form">
+              <select name="status" class="form-select form-select-sm w-auto">
+                <option value="Pending" {% if task['status'] == 'Pending' %}selected{% endif %}>Pending</option>
+                <option value="In Progress" {% if task['status'] == 'In Progress' %}selected{% endif %}>In Progress</option>
+                <option value="Done" {% if task['status'] == 'Done' %}selected{% endif %}>Done</option>
+              </select>
+              <button type="submit" class="btn btn-sm btn-update">Update</button>
+            </form>
+          </td>
+        </tr>
+
+        <!-- Task Details Modal -->
+        <div class="modal fade" id="taskModal{{ task['id'] }}" tabindex="-1" aria-labelledby="taskModalLabel{{ task['id'] }}" aria-hidden="true">
+          <div class="modal-dialog modal-dialog-scrollable">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="taskModalLabel{{ task['id'] }}">Task Details</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <div class="modal-body">
+                <p><strong>Title:</strong> {{ task['title'] }}</p>
+                <p><strong>Description:</strong> {{ task['description'] }}</p>
+                <p><strong>Machine:</strong> {{ task['machine_id'] }}</p>
+                <p><strong>Area:</strong> {{ task['area'] }}</p>
+                <p><strong>Deadline:</strong> {{ task['deadline'] }}</p>
+                <p><strong>Status:</strong> {{ task['status'] }}</p>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-dark" data-bs-dismiss="modal">Close</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Completed Tasks Section -->
+  <div class="card p-3 shadow table-responsive">
+    <h4 class="mb-3 text-success">Completed Tasks</h4>
+    {% if completed_tasks %}
+    <table class="table table-bordered table-hover align-middle">
+      <thead class="table-light">
+        <tr>
+          <th>Title</th>
+          <th>Description</th>
+          <th>Machine</th>
+          <th>Area</th>
+          <th>Deadline</th>
+          <th>Completed On</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for ctask in completed_tasks %}
+        <tr>
+          <td>{{ ctask['title'] }}</td>
+          <td>{{ ctask['description'] }}</td>
+          <td>{{ ctask['machine_id'] }}</td>
+          <td>{{ ctask['area'] }}</td>
+          <td>{{ ctask['deadline'] }}</td>
+          <td>{{ ctask['completed_at']|datetimeformat('%d %b %Y') }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% else %}
+      <p class="text-muted mb-0">No tasks completed yet.</p>
+    {% endif %}
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+  // Show modal when clicking a row, but ignore clicks on forms/buttons
+  document.querySelectorAll('.clickable-row').forEach(row => {
+    row.addEventListener('click', function (e) {
+      if (e.target.closest('form') || ['SELECT', 'BUTTON', 'OPTION'].includes(e.target.tagName)) {
+        return;
+      }
+      const id = this.dataset.taskId;
+      const modal = new bootstrap.Modal(document.getElementById('taskModal' + id));
+      modal.show();
+    });
+  });
+
+  // Prevent row click from triggering modal on status form
+  document.querySelectorAll('.status-form').forEach(form => {
+    form.addEventListener('click', e => e.stopPropagation());
+  });
+
+  // Auto-hide flash message
+  setTimeout(() => {
+    const flash = document.getElementById('flash-msg');
+    if (flash) flash.remove();
+  }, 1500);
+</script>
+</body>
+</html>

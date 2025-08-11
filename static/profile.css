@@ -1,0 +1,147 @@
+body {
+    font-family: 'Segoe UI', sans-serif;
+    background: linear-gradient(135deg, #d0e7ff, #fff7d1);
+    margin: 0;
+    padding: 30px;
+}
+
+/* Enhanced Profile Card */
+.profile-card {
+    max-width: 600px;
+    margin: auto;
+    background: white;
+    border-radius: 20px;
+    padding: 30px;
+    box-shadow: 0 6px 25px rgba(0, 0, 0, 0.15);
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    backdrop-filter: blur(6px);
+}
+
+.profile-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+}
+
+.profile-card h2, h3 {
+    text-align: center;
+    color: #333;
+    font-weight: 700;
+    letter-spacing: 1px;
+}
+
+label {
+    display: block;
+    margin-top: 15px;
+    font-weight: bold;
+    color: #444;
+}
+
+input[type="text"],
+input[type="password"],
+input[type="file"] {
+    width: 100%;
+    padding: 10px;
+    margin-top: 5px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    background: #f9f9f9;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+input:focus {
+    border-color: #007bff;
+    box-shadow: 0 0 5px rgba(0, 123, 255, 0.4);
+    outline: none;
+}
+
+button {
+    margin-top: 20px;
+    padding: 12px;
+    background: linear-gradient(45deg, #007bff, #0056b3);
+    color: white;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    width: 100%;
+    font-size: 16px;
+    font-weight: 600;
+    transition: transform 0.2s ease, background 0.3s ease;
+}
+
+button:hover {
+    background: linear-gradient(45deg, #0056b3, #003f7f);
+    transform: translateY(-2px);
+}
+
+/* Profile Image with Black Border */
+.profile-img img {
+    max-width: 150px;
+    display: block;
+    margin: 20px auto;
+    border-radius: 50%;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    border: 4px solid #000;  /* Black border */
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.profile-img img:hover {
+    transform: scale(1.05);
+    box-shadow: 0 6px 25px rgba(0, 0, 0, 0.3);
+}
+
+ul.tasks {
+    list-style: none;
+    padding-left: 0;
+}
+
+ul.tasks li {
+    background: #e0ffe0;
+    margin: 5px 0;
+    padding: 10px;
+    border-left: 5px solid green;
+    border-radius: 5px;
+}
+
+.flash {
+    margin: 10px 0;
+    padding: 10px;
+    border-radius: 8px;
+    font-weight: bold;
+    text-align: center;
+}
+
+.flash.success {
+    background-color: #d4edda;
+    color: #155724;
+}
+
+.flash.error {
+    background-color: #f8d7da;
+    color: #721c24;
+}
+
+.alert-success {
+    animation: popFlash 0.6s ease-out;
+    box-shadow: 0 0 10px #19875499;
+}
+
+@keyframes popFlash {
+    from { transform: scale(0.95); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+}
+
+.btn-remove {
+    width: auto;
+    padding: 3px 10px;
+    font-size: 13px;
+}
+
+.btn-sm {
+    font-size: 13px;
+    padding: 3px 12px;
+}
+
+.text-center form {
+    margin-bottom: 5px;
+}

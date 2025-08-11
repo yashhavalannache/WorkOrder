@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Register | WorkOrder System</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+
+  <style>
+    body {
+      background-image: url("{{ url_for('static', filename='backgrounds/industry_register.jpg') }}");
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      min-height: 100vh;
+      position: relative;
+    }
+
+    body::before {
+      content: "";
+      position: absolute;
+      top: 0; left: 0;
+      height: 100%; width: 100%;
+      background-color: rgba(0, 0, 0, 0.6);
+      z-index: 0;
+    }
+
+    .container { position: relative; z-index: 1; }
+    .card { background: rgba(255, 255, 255, 0.9); border-radius: 15px; }
+
+    @keyframes shake {
+      0%   { transform: translateX(0); }
+      15%  { transform: translateX(-10px); }
+      30%  { transform: translateX(8px); }
+      45%  { transform: translateX(-6px); }
+      60%  { transform: translateX(4px); }
+      75%  { transform: translateX(-2px); }
+      100% { transform: translateX(0); }
+    }
+    .shake { animation: shake 0.45s ease-in-out both; }
+
+    .password-toggle {
+      position: absolute;
+      top: 59%;
+      right: 12px;
+      transform: translateY(-50%);
+      cursor: pointer;
+      font-size: 1.25rem;
+      color: #6c757d;
+    }
+    .password-toggle:hover { color: #000; }
+  </style>
+</head>
+<body>
+  <div class="container min-vh-100 d-flex align-items-center justify-content-center">
+    <div class="card shadow p-4" id="registerCard" style="min-width:350px;max-width:400px;width:100%;">
+      <h2 class="mb-4 text-center text-success fw-bold">
+        <span id="typewriter"></span>
+      </h2>
+
+      {% with messages = get_flashed_messages(category_filter=["danger", "error", "success"]) %}
+        {% if messages %}
+          <div class="alert alert-danger shadow-sm">{{ messages[0] }}</div>
+        {% endif %}
+      {% endwith %}
+
+      <form method="POST" novalidate onsubmit="return validatePasswords()">
+        <div class="mb-3">
+          <label class="form-label">Username</label>
+          <input name="username" class="form-control" placeholder="Choose a username" required autocomplete="off">
+        </div>
+
+        <!-- Password -->
+        <div class="mb-3 position-relative">
+          <label class="form-label">Password</label>
+          <input type="password" name="password" id="passwordField" class="form-control pe-5" placeholder="Enter password" required autocomplete="new-password">
+          <i class="bi bi-eye password-toggle" id="togglePassword"></i>
+        </div>
+
+        <!-- Confirm Password -->
+        <div class="mb-3 position-relative">
+          <label class="form-label">Confirm Password</label>
+          <input type="password" name="confirm_password" id="confirmPasswordField" class="form-control pe-5" placeholder="Re-enter password" required autocomplete="new-password">
+          <i class="bi bi-eye password-toggle" id="toggleConfirmPassword"></i>
+          <div id="passwordMatchMsg" class="form-text text-danger d-none">Passwords do not match</div>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label">Role</label>
+          <select name="role" class="form-select" required>
+            <option value="">Select Role</option>
+            <option value="admin">Admin</option>
+            <option value="worker">Worker</option>
+          </select>
+        </div>
+
+        <button type="submit" class="btn btn-success w-100">Register</button>
+        <p class="mt-3 text-center">
+          <a href="{{ url_for('login') }}" class="text-decoration-none">Already registered? Login here</a>
+        </p>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    // Typewriter effect
+    const text = "WorkOrder Register";
+    let i = 0;
+    function typeWriter() {
+      if (i < text.length) {
+        document.getElementById("typewriter").innerHTML += text.charAt(i);
+        i++;
+        setTimeout(typeWriter, 150);
+      }
+    }
+    window.onload = typeWriter;
+
+    // Shake effect on error
+    window.addEventListener('DOMContentLoaded', () => {
+      const card = document.getElementById('registerCard');
+      const hasError = document.querySelector('.alert-danger');
+      if (hasError) triggerShake(card);
+    });
+
+    function triggerShake(el) {
+      el.classList.remove('shake');
+      void el.offsetWidth;
+      el.classList.add('shake');
+      el.addEventListener('animationend', () => el.classList.remove('shake'), { once: true });
+    }
+
+    // Toggle Password Visibility
+    const passwordField = document.getElementById("passwordField");
+    const confirmPasswordField = document.getElementById("confirmPasswordField");
+    const togglePassword = document.getElementById("togglePassword");
+    const toggleConfirmPassword = document.getElementById("toggleConfirmPassword");
+
+    togglePassword.addEventListener("click", () => {
+      const type = passwordField.type === "password" ? "text" : "password";
+      passwordField.type = type;
+      togglePassword.classList.toggle("bi-eye");
+      togglePassword.classList.toggle("bi-eye-slash");
+    });
+
+    toggleConfirmPassword.addEventListener("click", () => {
+      const type = confirmPasswordField.type === "password" ? "text" : "password";
+      confirmPasswordField.type = type;
+      toggleConfirmPassword.classList.toggle("bi-eye");
+      toggleConfirmPassword.classList.toggle("bi-eye-slash");
+    });
+
+    // Password Match Validation
+    function validatePasswords() {
+      const password = passwordField.value;
+      const confirm = confirmPasswordField.value;
+      const msg = document.getElementById("passwordMatchMsg");
+
+      if (password !== confirm) {
+        msg.classList.remove("d-none");
+        triggerShake(document.getElementById('registerCard'));
+        return false;
+      }
+      msg.classList.add("d-none");
+      return true;
+    }
+  </script>
+</body>
+</html>

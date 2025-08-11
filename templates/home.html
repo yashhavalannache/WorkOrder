@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>WorkOrder System</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+  <style>
+    body {
+      position: relative;
+      min-height: 100vh;
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      color: #212529;
+    }
+
+   
+
+    .container {
+      padding-top: 4rem;
+      padding-bottom: 4rem;
+    }
+.main-title {
+  font-size: 3.2rem;
+  letter-spacing: -1px;
+}
+
+.btn-get-started {
+  background-color: #2c0aef;
+  color: #fff;
+  border: none;
+  border-radius: 50px;
+  transition: all 0.3s ease;
+}
+
+.btn-get-started:hover {
+  background-color: #0056b3;
+  transform: translateY(-2px) scale(1.03);
+}
+
+    .lead {
+      max-width: 800px;
+      margin: auto;
+      font-size: 1.1rem;
+    }
+
+    .btn-get-started {
+  font-size: 1.2rem;
+  padding: 0.75rem 2rem;
+  border-radius: 30px;
+  border: none;
+  background-color: #e6f424;
+  color: rgb(15, 1, 1);
+  transition: background-color 0.3s ease, transform 0.2s ease;
+  opacity: 1;               /* ensure it's fully visible */
+  filter: none;             /* remove any inherited visual effects */
+}
+
+.btn-get-started:hover {
+  background-color: #eadf16;
+  transform: scale(1.03);
+  opacity: 1;               /* maintain visibility on hover */
+  filter: none;             /* prevent Bootstrap filters */
+}
+h3.fw-bold.text-center {
+  margin-top: -4rem; /* or try 0.5rem */
+}
+   .feature-card {
+  background-color: rgba(255, 255, 255, 0.85);
+  padding: 1.5rem;
+  border-radius: 12px;
+  box-shadow: 0 0 12px rgba(0, 0, 0, 0.08);
+  transition: transform 0.2s ease;
+  height: 100%;
+  color: #000; /* Make all text inside the card black */
+}
+
+.feature-card h5 {
+  margin-bottom: 0.75rem;
+  color: inherit; /* Ensures it uses the same black color as the rest */
+  text-shadow: none !important; /* Prevents glow or shadow */
+}
+
+
+    @media (max-width: 768px) {
+      .main-title {
+        font-size: 2rem;
+      }
+    }
+    .white-text-section {
+  color: white;
+  text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.6);
+}
+#bg-video {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* Ensures the video covers the entire screen */
+    z-index: -2;       /* Sends video behind all content */
+}
+
+.overlay {
+    position: relative;
+    z-index: 1;
+    text-align: center;
+    color: #fff;
+    top: 40%;
+    transform: translateY(-50%);
+}
+
+body::before {
+    content: "";
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.4); /* Slight dark overlay for readability */
+    z-index: -1;
+}
+
+.cta {
+    display: inline-block;
+    padding: 12px 24px;
+    margin-top: 20px;
+    background: rgba(255, 255, 255, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    color: #fff;
+    text-decoration: none;
+    font-weight: bold;
+    border-radius: 8px;
+    transition: 0.3s;
+}
+.cta:hover {
+    background: rgba(255, 255, 255, 0.4);
+}
+
+  </style>
+</head>
+<body>
+  <video autoplay muted loop playsinline id="bg-video">
+  <source src="{{ url_for('static', filename='backgrounds/background.mp4') }}" type="video/mp4">
+</video>
+  <div class="container text-center white-text-section">
+  <h1 class="main-title mb-3 fw-bold">WorkOrder System ⚙️</h1>
+
+  <p class="lead mb-4 fw-semibold">
+    A robust task and work order management platform for businesses and teams. Easily assign tasks,
+    monitor progress, upload proofs, and track analytics — all in one streamlined interface built for admins and workers.
+  </p>
+
+  <p class="lead mb-5 fw-semibold">
+    From login-based role access to real-time status tracking, WorkOrder System simplifies daily operations,
+    boosts productivity, and brings order to complex task workflows.
+  </p>
+
+  <div class="d-flex justify-content-center mb-5">
+    <a href="{{ url_for('login') }}" class="btn btn-get-started shadow">Get Started</a>
+  </div>
+<div class="container">
+  <h3 class="fw-bold mb-4 text-center">Key Features</h3>
+  <div class="row g-4 justify-content-center">
+
+    <div class="col-md-4">
+      <div class="feature-card">
+        <h5 class="fw-bold text-primary">User Authentication</h5>
+        <p>Role-based secure login and registration for admins and workers, ensuring controlled access.</p>
+      </div>
+    </div>
+
+    <div class="col-md-4">
+      <div class="feature-card">
+        <h5 class="fw-bold text-danger">Admin Dashboard</h5>
+        <p>Admins can create, assign, edit, and track tasks with real-time progress insights and user management.</p>
+      </div>
+    </div>
+
+    <div class="col-md-4">
+      <div class="feature-card">
+        <h5 class="fw-bold text-info">Worker Dashboard</h5>
+        <p>Workers view assigned tasks, update statuses, and upload proof of completion efficiently and securely.</p>
+      </div>
+    </div>
+
+    <div class="col-md-4">
+      <div class="feature-card">
+        <h5 class="fw-bold text-success">Analytics & Tracking</h5>
+        <p>Real-time task counts, completion rates, and progress charts help monitor team performance instantly.</p>
+      </div>
+    </div>
+
+    <div class="col-md-4">
+      <div class="feature-card">
+        <h5 class="fw-bold text-secondary">Modern Tech Stack</h5>
+        <p>Powered by Flask, SQLite, Bootstrap, and Jinja templates — fast, reliable, and easy to deploy anywhere.</p>
+      </div>
+    </div>
+
+    <div class="col-md-4">
+      <div class="feature-card">
+        <h5 class="fw-bold text-warning">Status Management</h5>
+        <p>Visual color-coded statuses (Pending, In Progress, Done) for quick task visibility and team coordination.</p>
+      </div>
+    </div>
+
+  </div>
+</div>

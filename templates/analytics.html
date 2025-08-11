@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Analytics • WorkOrder</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body {
+      position: relative;
+      min-height: 100vh;
+      margin: 0;
+    }
+    body::before {
+      content: "";
+      background-image: url("{{ url_for('static', filename='backgrounds/adminlist.jpg') }}");
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      background-attachment: fixed;
+      opacity: 0.45;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -1;
+    }
+
+    .card.shadow-sm,
+    .card.shadow.table-responsive {
+      background-color: rgba(255, 255, 255, 0.95);
+      border-radius: 15px;
+      padding: 20px;
+      box-shadow: 0 0 25px rgba(0, 0, 0, 0.25);
+    }
+
+    h2 {
+      font-weight: bold;
+    }
+
+    .kpi-box {
+      background: white;
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+      text-align: center;
+      transition: transform 0.2s ease-in-out;
+    }
+
+    .kpi-box:hover {
+      transform: scale(1.02);
+    }
+
+    .kpi-box h3 {
+      font-size: 2.2rem;
+      margin: 0;
+      font-weight: bold;
+    }
+
+    .kpi-box p {
+      color: #555;
+      margin: 0;
+      font-size: 1rem;
+    }
+
+    .chart-card,
+    .bottlenecks,
+    .leaderboard-table {
+      background: white;
+      border-radius: 12px;
+      padding: 15px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+      margin-top: 20px;
+      margin-bottom: 15px;
+    }
+
+    .chart-card h5,
+    .bottlenecks h5 {
+      margin-bottom: 10px;
+      font-weight: 600;
+    }
+
+    .leaderboard-table .table {
+      margin-bottom: 0;
+    }
+
+    .leaderboard-table th,
+    .leaderboard-table td {
+      padding: 8px 10px;
+      vertical-align: middle;
+      font-size: 0.95rem;
+    }
+
+    .table-hover tbody tr:hover {
+      background-color: #f8f9fa;
+    }
+
+    .bottlenecks ul {
+      text-align: center;
+      padding: 0;
+      list-style: none;
+      margin: 0;
+    }
+
+    canvas {
+      max-width: 100%;
+      max-height: 300px;
+    }
+    .leaderboard-table {
+  padding: 10px 15px;
+  max-width: 1000px;      /* Keeps table compact */
+  margin: 0 auto 15px;   /* Centers the table horizontally */
+}
+
+.leaderboard-table .table {
+  width: 100%;
+  margin-bottom: 0;
+  table-layout: auto;
+}
+
+.leaderboard-table th,
+.leaderboard-table td {
+  padding: 8px 12px;
+  font-size: 0.95rem;
+  text-align: center;
+}
+
+.leaderboard-table h5 {
+  margin-bottom: 12px;
+}
+.bottlenecks {
+  padding: 10px 15px;
+  max-width: 1000px;       /* Compact width */
+  margin: 0 auto 15px;    /* Center it */
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  text-align: center;
+}
+
+.bottlenecks h5 {
+  margin-bottom: 12px;
+}
+
+.bottlenecks ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.bottlenecks li {
+  padding: 5px 0;
+  font-size: 0.95rem;
+}
+
+
+  </style>
+</head>
+<body>
+<div class="container py-4">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>📊 Analytics Dashboard</h2>
+    <a class="btn btn-dark" href="{{ url_for('dashboard') }}">← Back to Dashboard</a>
+
+  </div>
+
+  <!-- KPI Cards -->
+  <div class="row g-3">
+    <div class="col-md-2 col-6"><div class="kpi-box text-warning"><h3>{{ pending_count }}</h3><p>Pending</p></div></div>
+    <div class="col-md-2 col-6"><div class="kpi-box text-info"><h3>{{ in_progress_count }}</h3><p>In Progress</p></div></div>
+    <div class="col-md-2 col-6"><div class="kpi-box text-success"><h3>{{ done_count }}</h3><p>Done</p></div></div>
+    <div class="col-md-3 col-6"><div class="kpi-box text-danger"><h3>{{ overdue_count }}</h3><p>Overdue</p></div></div>
+    <div class="col-md-3 col-6"><div class="kpi-box text-primary"><h3>{{ upcoming_count }}</h3><p>Due Next 3 Days</p></div></div>
+  </div>
+
+  <!-- Efficiency KPIs -->
+  <div class="row g-3 mt-3">
+    <div class="col-md-6"><div class="kpi-box"><h3>{{ cycle_time }} days</h3><p>Avg Cycle Time</p></div></div>
+    <div class="col-md-6"><div class="kpi-box"><h3>{{ on_time }}%</h3><p>On-Time Completion</p></div></div>
+  </div>
+
+  <!-- Charts -->
+  <div class="row mt-4">
+    <div class="col-md-6"><div class="chart-card"><h5>📊 Task Status Split</h5><canvas id="statusPie"></canvas></div></div>
+    <div class="col-md-6"><div class="chart-card"><h5>📈 Throughput (Last 7 Days)</h5><canvas id="throughputChart"></canvas></div></div>
+  </div>
+
+  <div class="row">
+    <div class="col-md-6"><div class="chart-card"><h5>🔥 Heatmap by Area</h5><canvas id="heatmapAreaChart"></canvas></div></div>
+    <div class="col-md-6"><div class="chart-card"><h5>🛠 Heatmap by Machine</h5><canvas id="heatmapMachineChart"></canvas></div></div>
+  </div>
+  
+  <!-- Leaderboard -->
+ <div class="chart-card leaderboard-table">
+  <h5 class="text-center">🏆 Top Workers</h5>
+  <div class="table-responsive">
+    <table class="table table-hover">
+      <thead class="table-light">
+        <tr>
+          <th>#</th>
+          <th>Worker</th>
+          <th>Tasks Closed</th>
+          <th>Avg Close Time (days)</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for worker, tasks_done, avg_time in leaderboard %}
+          <tr>
+            <td>{{ loop.index }}</td>
+            <td>{{ worker }}</td>
+            <td>{{ tasks_done }}</td>
+            <td>{{ avg_time }}</td>
+          </tr>
+        {% else %}
+          <tr>
+            <td colspan="4" class="text-center text-muted">No data</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- JS + Chart Logic -->
+<div id="analytics-data"
+     data-pending="{{ pending_count }}"
+     data-inprogress="{{ in_progress_count }}"
+     data-done="{{ done_count }}"
+     data-throughput='{{ throughput | tojson }}'
+     data-areas='{{ heatmap_area | tojson }}'
+     data-machines='{{ heatmap_machine | tojson }}'>
+</div>
+
+<script>
+  const dataElem = document.getElementById('analytics-data');
+  const pending = parseInt(dataElem.dataset.pending);
+  const inProgress = parseInt(dataElem.dataset.inprogress);
+  const done = parseInt(dataElem.dataset.done);
+  const throughput = JSON.parse(dataElem.dataset.throughput);
+  const areaData = JSON.parse(dataElem.dataset.areas);
+  const machineData = JSON.parse(dataElem.dataset.machines);
+
+  const vibrantColors = [
+  '#FF6B6B', '#4ECDC4', '#FFD166', '#1A73E8',
+  '#6A4C93', '#00B894', '#FF9F1C', '#FF3D67',
+  '#2EC4B6', '#EF476F', '#118AB2', '#06D6A0'
+];
+
+  const getColorArray = (length) => vibrantColors.slice(0, length);
+
+  new Chart(document.getElementById('statusPie'), {
+    type: 'pie',
+    data: {
+      labels: ['Pending', 'In Progress', 'Done'],
+      datasets: [{
+        data: [pending, inProgress, done],
+        backgroundColor: getColorArray(3)
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        tooltip: { callbacks: { label: ctx => `${ctx.label}: ${ctx.raw}` } }
+      }
+    }
+  });
+
+  new Chart(document.getElementById('throughputChart'), {
+    type: 'line',
+    data: {
+      labels: throughput.map(t => t[0]),
+      datasets: [{
+        label: 'Tasks Completed',
+        data: throughput.map(t => t[1]),
+        borderColor: '#81B1FF',
+        backgroundColor: 'rgba(129, 177, 255, 0.3)',
+        tension: 0.3,
+        fill: true
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      scales: {
+        y: {
+          ticks: { precision: 0 }
+        }
+      }
+    }
+  });
+
+  new Chart(document.getElementById('heatmapAreaChart'), {
+    type: 'bar',
+    data: {
+      labels: areaData.map(a => a[0]),
+      datasets: [{
+        label: 'Tasks',
+        data: areaData.map(a => a[1]),
+        backgroundColor: getColorArray(areaData.length)
+      }]
+    },
+    options: {
+      indexAxis: 'y',
+      responsive: true,
+      maintainAspectRatio: false,
+      scales: {
+        x: { ticks: { precision: 0 } }
+      }
+    }
+  });
+
+  new Chart(document.getElementById('heatmapMachineChart'), {
+    type: 'bar',
+    data: {
+      labels: machineData.map(m => m[0]),
+      datasets: [{
+        label: 'Tasks',
+        data: machineData.map(m => m[1]),
+        backgroundColor: getColorArray(machineData.length)
+      }]
+    },
+    options: {
+      indexAxis: 'y',
+      responsive: true,
+      maintainAspectRatio: false,
+      scales: {
+        x: { ticks: { precision: 0 } }
+      }
+    }
+  });
+</script>
+</body>
+</html>

@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Workers • WorkOrder</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <style>
+    body {
+      position: relative;
+      min-height: 100vh;
+      margin: 0;
+    }
+
+    body::before {
+      content: "";
+      background-image: url("{{ url_for('static', filename='backgrounds/industry.jpg') }}");
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      background-attachment: fixed;
+      opacity: 0.6;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -1;
+    }
+
+    .card.shadow-sm {
+      background-color: rgba(255, 255, 255, 0.95);
+      border-radius: 15px;
+      padding: 20px;
+      box-shadow: 0 0 25px rgba(0, 0, 0, 0.25);
+    }
+
+    .avatar-img {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 2px solid #ddd;
+    }
+
+    .admin-name {
+      font-weight: 600;
+      margin-right: 10px;
+      color: #333;
+    }
+
+    h2 {
+      color: #2c3e50;
+      font-weight: bold;
+    }
+
+    .action-buttons {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .delete-btn {
+      background-color: #e0220d;
+      color: white;
+      border: none;
+      padding: 5px 8px;
+      border-radius: 5px;
+      font-size: 0.8rem;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: background 0.2s ease, transform 0.2s;
+    }
+
+    .delete-btn:hover {
+      background-color: #c21a08;
+      transform: scale(1.05);
+    }
+
+    .btn-outline-primary {
+      transition: all 0.2s ease;
+    }
+
+    .btn-outline-primary:hover {
+      background-color: #0d6efd;
+      color: white;
+    }
+
+    .btn-secondary {
+      margin-top: 15px;
+    }
+
+    #flash-message {
+      transition: opacity 0.5s ease;
+    }
+
+    .custom-dark-btn,
+    .custom-dark-btn:hover,
+    .custom-dark-btn:focus {
+      color: white !important;
+      background-color: #222 !important;
+      border: none;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+      transition: background 0.3s ease, transform 0.2s;
+    }
+
+    .custom-dark-btn:hover {
+      background-color: #000 !important;
+      transform: scale(1.04);
+    }
+    .logged-in-badge {
+  display: inline-block;
+  padding: 8px 14px;
+  font-weight: 600;
+  font-size: 0.95rem;
+  border-radius: 12px;
+  color: #fff;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  border: 1px solid rgba(76, 39, 224, 0.943);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  transition: all 0.3s ease;
+
+  /* Position tweak */
+  position: relative;
+  top: 8px;    /* moves it slightly down */
+  left: -0.3cm; /* moves it 0.3cm to the left */
+}
+
+.logged-in-badge .text {
+  opacity: 0.9;
+  margin-right: 4px;
+}
+
+.logged-in-badge .admin-name {
+  color: #f0ed0d; /* Gold highlight */
+  text-shadow: 0 0 5px rgba(236, 236, 42, 0.8);
+}
+
+.logged-in-badge:hover {
+  transform: scale(1.05);
+  background: rgba(0, 0, 0, 0.75);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.4);
+}
+  </style>
+</head>
+<body>
+
+<!-- Admin Navbar -->
+<nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm mb-4">
+  <div class="container">
+    <span class="navbar-brand fw-bold text-primary">WorkOrder Admin</span>
+    
+    <div class="d-flex align-items-center ms-auto">
+      <p class="logged-in-badge shadow-glass">
+  <span class="text">Logged in as:</span> 
+  <span class="admin-name">{{ user['username'] }}</span>
+</p>
+      <a href="{{ url_for('profile', user_id=session['user_id']) }}" title="View Profile" class="me-2">
+        {% if user and user['profile_pic'] %}
+          <img src="{{ url_for('static', filename='uploads/' ~ user['profile_pic']) }}" alt="Profile" class="avatar-img">
+        {% else %}
+          <img src="{{ url_for('static', filename='uploads/profile_dummy.png') }}" alt="Default" class="avatar-img">
+        {% endif %}
+      </a>
+      <a href="{{ url_for('logout') }}" class="btn btn-outline-danger">Logout</a>
+    </div>
+  </div>
+</nav>
+
+<div class="container mt-4">
+  <div class="text-center mb-3">
+    <h2>👷Registered Workers</h2>
+  </div>
+
+  <!-- Flash Message -->
+  {% with messages = get_flashed_messages() %}
+    {% if messages %}
+      <div id="flash-message" class="alert alert-success shadow-sm mt-2 d-flex align-items-center">
+        <span>{{ messages[0] }}</span>
+      </div>
+    {% endif %}
+  {% endwith %}
+
+  {% if workers %}
+    <div class="card shadow-sm mx-auto" style="max-width: 850px;">
+      <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+          <thead class="table-light">
+            <tr>
+              <th style="min-width: 120px;">Username</th>
+              <th style="min-width: 200px;">Email</th>
+              <th style="min-width: 100px;">Phone</th>
+              <th style="min-width: 160px;"></th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for worker in workers %}
+            <tr>
+              <td>{{ worker.username }}</td>
+              <td>{{ worker.email or '-' }}</td>
+              <td>{{ worker.phone or '-' }}</td>
+              <td class="action-buttons">
+                <a href="{{ url_for('worker_detail', worker_id=worker.id) }}" class="btn btn-sm btn-outline-primary">View Details</a>
+                <form method="POST" action="{{ url_for('remove_worker', worker_id=worker.id) }}" style="display:inline;" onsubmit="return confirm('Are you sure you want to remove {{ worker.username }}? This action cannot be undone.')">
+                  <button type="submit" class="delete-btn">Remove</button>
+                </form>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  {% else %}
+    <div class="alert alert-info text-center">No workers registered yet.</div>
+  {% endif %}
+
+  <div class="text-center">
+    <a href="{{ url_for('dashboard') }}" class="btn custom-dark-btn">← Back to Dashboard</a>
+  </div>
+</div>
+
+<!-- JS Scripts -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+  // Auto-hide flash message
+  setTimeout(() => {
+    const flash = document.getElementById('flash-message');
+    if (flash) {
+      flash.style.opacity = "0";
+      setTimeout(() => flash.remove(), 500);
+    }
+  }, 1500);
+</script>
+</body>
+</html>
