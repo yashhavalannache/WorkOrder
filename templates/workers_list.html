@@ -144,6 +144,22 @@
   background: rgba(0, 0, 0, 0.75);
   box-shadow: 0 6px 18px rgba(0, 0, 0, 0.4);
 }
+/* Mobile First: default styling is for small screens */
+
+/* Tablet screens (≥ 768px) */
+@media (min-width: 768px) {
+  .container {
+    max-width: 90%;
+  }
+}
+
+/* Desktop screens (≥ 1024px) */
+@media (min-width: 1024px) {
+  .container {
+    max-width: 1200px;
+  }
+}
+
   </style>
 </head>
 <body>

@@ -26,6 +26,21 @@
       background-color: rgba(0, 0, 0, 0.6);
       z-index: 0;
     }
+/* Mobile First: default styling is for small screens */
+
+/* Tablet screens (≥ 768px) */
+@media (min-width: 768px) {
+  .container {
+    max-width: 90%;
+  }
+}
+
+/* Desktop screens (≥ 1024px) */
+@media (min-width: 1024px) {
+  .container {
+    max-width: 1200px;
+  }
+}
 
     .container { position: relative; z-index: 1; }
     .card { background: rgba(255, 255, 255, 0.9); border-radius: 15px; }

@@ -50,6 +50,21 @@
   border-radius: 8px;
   transition: 0.3s;
 }
+/* Mobile First: default styling is for small screens */
+
+/* Tablet screens (≥ 768px) */
+@media (min-width: 768px) {
+  .container {
+    max-width: 90%;
+  }
+}
+
+/* Desktop screens (≥ 1024px) */
+@media (min-width: 1024px) {
+  .container {
+    max-width: 1200px;
+  }
+}
 
 .video-bg-section .cta:hover {
   background: rgba(255, 255, 255, 0.4);
@@ -175,7 +190,7 @@ body::before {
 
   <script>
     // Typewriter Effect
-    const text = "WorkOrderLogin";
+    const text = "WorkOrder Login";
     let i = 0;
     function typeWriter() {
       if (i < text.length) {

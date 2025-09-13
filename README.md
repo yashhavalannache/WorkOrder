@@ -1,74 +1,87 @@
-WorkOrder System ⚙️
-The WorkOrder System is a streamlined task and work order management platform designed to simplify operations for admins, workers, and supervisors. It ensures smooth task assignment, tracking, and completion with real-time updates, providing a user-friendly interface and robust backend logic.
+# ⚙️ WorkOrder System
 
-✨ Features
-User Authentication 🔐
-Secure login and registration for admins and workers with role-based access.
+The **WorkOrder System** is a streamlined task and work order management platform designed to simplify operations for admins, workers, and supervisors. It ensures smooth task assignment, tracking, and completion with real-time updates, providing a **user-friendly interface** and **robust backend logic**.
 
-Admin Dashboard 📋
+---
 
-Create, update, assign, and delete tasks.
+## ✨ Features
 
-Track task deadlines and status (Pending/Done/In Progress).
+### 🔐 User Authentication
+- Secure login and registration with **role-based access** (Admin & Worker).
 
-Manage workers with ease.
+### 📋 Admin Dashboard
+- Create, update, assign, and delete tasks.  
+- Track deadlines and statuses (Pending / In Progress / Done).  
+- Manage workers with ease.
 
-Worker Dashboard 🧑‍🔧
+### 🧑‍🔧 Worker Dashboard
+- View assigned tasks.  
+- Update status to **Done** upon completion.
 
-View tasks assigned by the admin.
+### 🎨 Status Management
+- **Pending** = Grey  
+- **In Progress** = Blue  
+- **Done** = Green  
 
-Update task status to Done when completed.
+### 🔔 Notifications
+- Flash messages for success & error handling.  
+- Engaging alerts for smooth user experience.
 
-Status Management 🎨
+---
 
-Color-coded task statuses for quick insights (Pending = Grey, Done = Green, In Progress = Blue).
+## 🛠️ Tech Stack
 
-Flash Messages & Notifications 🔔
-Engaging success and error messages for a smooth user experience.
+**Frontend**: HTML5, CSS3, Bootstrap 5  
+**Backend**: Python (Flask Framework)  
+**Database**: SQLite  
+**Other Tools**: Jinja2 Templates, Flask Sessions, Flash Messaging  
 
-🛠️ Tech Stack
-Frontend: HTML5, CSS3, Bootstrap 5
+---
 
-Backend: Python (Flask Framework)
+## 📸 Project Preview
 
-Database: SQLite
+![WorkOrder Dashboard](static/backgrounds/dashboard.jpg)
 
-Other Tools: Jinja2 Templates, Flask Sessions, Flash Messaging
 
-Folder Structure
-Industry Mini Project/
-├── app.py
-├── README.md
-├── requirements.txt
-├── workorder.db
-├── exported_tasks.xlsx
+## 📂 Folder Structure
 
+```text
+WorkOrder-System/
+│── app.py
+│── README.md
+│── requirements.txt
+│── workorder.db
+│── exported_tasks.xlsx
+│
 ├── database/
-│   ├── industry.db
-│   └── workorders.db
+│ ├── industry.db
+│ └── workorders.db
 │
 ├── static/
-│   ├── profile.css
-│   ├── style.css
-├── ├── backgrounds/
-│   ├── uploads/
+│ ├── css/
+│ │ ├── style.css
+│ │ └── profile.css
+│ ├── images/
+│ │ └── backgrounds/
+│ └── uploads/
 │
 ├── templates/
-│   ├── admin_dashboard.html
-│   ├── admin_details.html
-│   ├── admin_list.html
-│   ├── admin_profile.html
-│   ├── chat.html
-│   ├── create_task.html
-│   ├── export_success.html
-│   ├── login.html
-│   ├── profile.html
-│   ├── register.html
-│   ├── worker_dashboard.html
-│   ├── worker_detail.html
-│   └── workers_list.html
+│ ├── admin_dashboard.html
+│ ├── admin_details.html
+│ ├── admin_list.html
+│ ├── admin_profile.html
+│ ├── chat.html
+│ ├── create_task.html
+│ ├── export_success.html
+│ ├── login.html
+│ ├── profile.html
+│ ├── register.html
+│ ├── worker_dashboard.html
+│ ├── worker_detail.html
+│ └── workers_list.html
 │
 └── utils/
-    ├── __pycache__/
-    ├── db_init.py
-    └── export_excel.py
+├── db_init.py
+└── export_excel.py
+```
+

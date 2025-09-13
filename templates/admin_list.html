@@ -123,6 +123,21 @@
       background-color: #000 !important;
       transform: scale(1.04);
     }
+/* Mobile First: default styling is for small screens */
+
+/* Tablet screens (≥ 768px) */
+@media (min-width: 768px) {
+  .container {
+    max-width: 90%;
+  }
+}
+
+/* Desktop screens (≥ 1024px) */
+@media (min-width: 1024px) {
+  .container {
+    max-width: 1200px;
+  }
+}
 
     /* Admin name beside profile */
     .admin-name {

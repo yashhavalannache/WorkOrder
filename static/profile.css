@@ -102,6 +102,21 @@ ul.tasks li {
     border-left: 5px solid green;
     border-radius: 5px;
 }
+/* Mobile First: default styling is for small screens */
+
+/* Tablet screens (≥ 768px) */
+@media (min-width: 768px) {
+  .container {
+    max-width: 90%;
+  }
+}
+
+/* Desktop screens (≥ 1024px) */
+@media (min-width: 1024px) {
+  .container {
+    max-width: 1200px;
+  }
+}
 
 .flash {
     margin: 10px 0;

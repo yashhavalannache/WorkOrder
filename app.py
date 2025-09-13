@@ -755,4 +755,4 @@ def admin_profile():
     return render_template('profile.html', user=user)
 # ---------- MAIN ----------
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(host='0.0.0.0', port=5008, debug=True)
