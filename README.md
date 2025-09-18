@@ -8,7 +8,7 @@ The **WorkOrder System** is a streamlined task and work order management platfor
 
 ### 🔐 User Authentication
 - Secure login and registration with **role-based access** (Admin & Worker).
---
+
 ### 📋 Admin Dashboard
 - Create, update, assign, and delete tasks.  
 - Track deadlines and statuses (Pending / In Progress / Done).  
