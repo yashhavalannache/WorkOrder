@@ -23,10 +23,6 @@ The **WorkOrder System** is a streamlined task and work order management platfor
 - **In Progress** = Blue  
 - **Done** = Green  
 
-### 🔔 Notifications
-- Flash messages for success & error handling.  
-- Engaging alerts for smooth user experience.
-
 ---
 
 ## 🛠️ Tech Stack
@@ -42,6 +38,7 @@ The **WorkOrder System** is a streamlined task and work order management platfor
 
 ![WorkOrder Dashboard](static/backgrounds/dashboard.jpg)
 
+---
 
 ## 📂 Folder Structure
 
